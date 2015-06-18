@@ -22,7 +22,7 @@ $ sbt test:jcheckStyle
 To configure Java code style, edit `jcheckStyleConfig` setting. In default, it uses Google's Java style:
 
 ```
-jcheckStyleConfig := "google" // or "facebook", "sun", or path to your checkstyle.xml
+jcheckStyleConfig := "google" // or "facebook", "sun" or path to your checkstyle.xml
 ```
 
 Here is the list of the available styles:
