@@ -27,18 +27,3 @@ libraryDependencies ++= Seq(
   "com.puppycrawl.tools" % "checkstyle" % "6.7"
 )
 
-import ReleaseTransformations._
-
-releaseTagName := {(version in ThisBuild).value}
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  ReleaseStep(action = Command.process("publishSigned", _)),
-  setNextVersion
-)
-
