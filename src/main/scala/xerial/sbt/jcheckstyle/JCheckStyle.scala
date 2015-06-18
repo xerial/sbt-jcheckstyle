@@ -1,7 +1,7 @@
 package xerial.sbt.jcheckstyle
 
 import com.puppycrawl.tools.checkstyle.api.{AuditEvent, AuditListener, SeverityLevel}
-import com.puppycrawl.tools.checkstyle.{Checker, ConfigurationLoader, PropertiesExpander}
+import com.puppycrawl.tools.checkstyle.{PackageNamesLoader, Checker, ConfigurationLoader, PropertiesExpander}
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -11,8 +11,8 @@ import scala.collection.JavaConverters._
 object JCheckStyle extends AutoPlugin {
 
   trait JCheckStyleKeys {
-    val jcheckStyleConfig = settingKey[String]("Check style type: airlift (default), google, sun or path to checkstyle.xml")
-    val jcheckStyleEnforce = settingKey[Boolean]("Enforce style check. default = true")
+    val jcheckStyleConfig = settingKey[String]("Check style type: google (default), facebook, sun or path to checkstyle.xml")
+    val jcheckStyleStrict = settingKey[Boolean]("Issue an error when style check fails. default = true")
     val jcheckStyle = taskKey[Boolean]("Run checkstyle")
   }
 
@@ -30,7 +30,7 @@ object JCheckStyle extends AutoPlugin {
 
   lazy val jcheckStyleSettings = Seq[Setting[_]](
     jcheckStyleConfig := "google",
-    jcheckStyleEnforce := true,
+    jcheckStyleStrict := true,
     jcheckStyle in Compile <<= runCheckStyle(Compile),
     jcheckStyle in Test <<= runCheckStyle(Test)
   )
@@ -82,7 +82,7 @@ object JCheckStyle extends AutoPlugin {
       checker.addListener(new StyleCheckListener(baseDirectory.value, log))
       val totalNumberOfErrors = checker.process(javaFiles)
       if(totalNumberOfErrors > 0) {
-        if(jcheckStyleEnforce.value) {
+        if(jcheckStyleStrict.value) {
           sys.error(s"Found ${totalNumberOfErrors} style error(s)")
         }
       }
