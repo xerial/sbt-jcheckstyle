@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
 object JCheckStyle extends AutoPlugin {
 
   trait JCheckStyleKeys {
-    val jcheckStyleConfig = settingKey[File]("Path checkstyle configuration file. The default is checkstyle.xml")
+    val jcheckStyleConfig = settingKey[String]("Check style type: airlift (default), google, sun or path to checkstyle.xml")
     val jcheckStyleEnforce = settingKey[Boolean]("Enforce style check. default = true")
     val jcheckStyle = taskKey[Boolean]("Run checkstyle")
   }
@@ -29,7 +29,7 @@ object JCheckStyle extends AutoPlugin {
   import autoImport._
 
   lazy val jcheckStyleSettings = Seq[Setting[_]](
-    jcheckStyleConfig := baseDirectory.value / "checkstyle.xml",
+    jcheckStyleConfig := "airlift",
     jcheckStyleEnforce := true,
     jcheckStyle in Compile <<= runCheckStyle(Compile),
     jcheckStyle in Test <<= runCheckStyle(Test)
@@ -38,17 +38,43 @@ object JCheckStyle extends AutoPlugin {
   private def relPath(file: File, base: File): File =
     file.relativeTo(base).getOrElse(file)
 
+
+  private def findStyleFile(style:String, targetDir:File): File = {
+    val styleResource = this.getClass.getResource(s"/xerial/sbt/jcheckstyle/${style}.xml")
+    if(styleResource != null) {
+      val in = styleResource.openStream()
+      try {
+        val configFileBytes = IO.readBytes(in)
+        val path = targetDir / "jcheckstyle" / s"${style.toLowerCase}.xml"
+        path.getParentFile.mkdirs()
+        IO.write(path, configFileBytes)
+        path
+      }
+      finally {
+        in.close()
+      }
+    }
+    else {
+      new File(style)
+    }
+  }
+
   def runCheckStyle(conf: Configuration): Def.Initialize[Task[Boolean]] = Def.task {
     val log = streams.value.log
+
     val javaSrcDir = (javaSource in conf).value
     log.info(s"Running checkstyle: ${relPath(javaSrcDir, baseDirectory.value)}")
-    val configFile = jcheckStyleConfig.value
-    if (!configFile.exists()) {
-      sys.error(s"${configFile} does not exist. Specify the config file path with jcheckStyleConfig setting")
+
+    // Find checkstyle configuration
+    val styleFile = findStyleFile(jcheckStyleConfig.value, target.value)
+    if(!styleFile.exists()) {
+      sys.error(s"${styleFile} does not exist. jcheckStyleConfig must be airlift, google, sun or path to config.xml")
     }
 
+    log.info(s"Using checkstyle configuration: ${jcheckStyleConfig.value}")
+
     val javaFiles = (sources in conf).value.filter(_.getName endsWith ".java").asJava
-    val loader = ConfigurationLoader.loadConfiguration(jcheckStyleConfig.value.getPath, new PropertiesExpander(System.getProperties))
+    val loader = ConfigurationLoader.loadConfiguration(styleFile.getPath, new PropertiesExpander(System.getProperties))
     val checker = new Checker()
     try {
       checker.setModuleClassLoader(classOf[Checker].getClassLoader)
