@@ -62,36 +62,41 @@ object JCheckStyle extends AutoPlugin {
   def runCheckStyle(conf: Configuration): Def.Initialize[Task[Boolean]] = Def.task {
     val log = streams.value.log
 
-    val javaSrcDir = (javaSource in conf).value
-    log.info(s"Running checkstyle: ${relPath(javaSrcDir, baseDirectory.value)}")
-
-    // Find checkstyle configuration
-    val styleFile = findStyleFile(jcheckStyleConfig.value, target.value)
-    if(!styleFile.exists()) {
-      sys.error(s"${styleFile} does not exist. jcheckStyleConfig must be airlift, google, sun or path to config.xml")
+    if (!scala.util.Properties.isJavaAtLeast("1.7")) {
+      log.warn(s"checkstyle requires Java 1.7 or higher.")
     }
+    else {
+      val javaSrcDir = (javaSource in conf).value
+      log.info(s"Running checkstyle: ${relPath(javaSrcDir, baseDirectory.value)}")
 
-    log.info(s"Using checkstyle configuration: ${jcheckStyleConfig.value}")
+      // Find checkstyle configuration
+      val styleFile = findStyleFile(jcheckStyleConfig.value, target.value)
+      if (!styleFile.exists()) {
+        sys.error(s"${styleFile} does not exist. jcheckStyleConfig must be airlift, google, sun or path to config.xml")
+      }
 
-    val javaFiles = (sources in conf).value.filter(_.getName endsWith ".java").asJava
-    val loader = ConfigurationLoader.loadConfiguration(styleFile.getPath, new PropertiesExpander(System.getProperties))
-    val checker = new Checker()
-    try {
-      checker.setModuleClassLoader(classOf[Checker].getClassLoader)
-      checker.configure(loader)
-      checker.addListener(new StyleCheckListener(baseDirectory.value, log))
-      val totalNumberOfErrors = checker.process(javaFiles)
-      if(totalNumberOfErrors > 0) {
-        if(jcheckStyleStrict.value) {
-          sys.error(s"Found ${totalNumberOfErrors} style error(s)")
+      log.info(s"Using checkstyle configuration: ${jcheckStyleConfig.value}")
+
+      val javaFiles = (sources in conf).value.filter(_.getName endsWith ".java").asJava
+      val loader = ConfigurationLoader.loadConfiguration(styleFile.getPath, new PropertiesExpander(System.getProperties))
+      val checker = new Checker()
+      try {
+        checker.setModuleClassLoader(classOf[Checker].getClassLoader)
+        checker.configure(loader)
+        checker.addListener(new StyleCheckListener(baseDirectory.value, log))
+        val totalNumberOfErrors = checker.process(javaFiles)
+        if (totalNumberOfErrors > 0) {
+          if (jcheckStyleStrict.value) {
+            sys.error(s"Found ${totalNumberOfErrors} style error(s)")
+          }
+        }
+        else {
+          log.info(s"checkstyle has succeeded")
         }
       }
-      else {
-        log.info(s"checkstyle has succeeded")
+      finally {
+        checker.destroy()
       }
-    }
-    finally {
-      checker.destroy()
     }
     true
   }
