@@ -29,7 +29,7 @@ object JCheckStyle extends AutoPlugin {
   import autoImport._
 
   lazy val jcheckStyleSettings = Seq[Setting[_]](
-    jcheckStyleConfig := "airlift",
+    jcheckStyleConfig := "google",
     jcheckStyleEnforce := true,
     jcheckStyle in Compile <<= runCheckStyle(Compile),
     jcheckStyle in Test <<= runCheckStyle(Test)
