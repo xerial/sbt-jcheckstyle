@@ -6,7 +6,7 @@ organizationHomepage := Some(new URL("http://xerial.org/"))
 description := "A sbt plugin for checking Java code styles"
 
 sbtPlugin := true
-publishMavenStyle := false
+publishMavenStyle := true
 scalacOptions += "-deprecation"
 
 scriptedSettings
