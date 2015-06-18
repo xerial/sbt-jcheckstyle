@@ -5,6 +5,8 @@ organizationHomepage := Some(new URL("http://xerial.org/"))
 
 description := "A sbt plugin for checking Java code styles"
 
+scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-target:jvm-1.6")
+
 sbtPlugin := true
 publishMavenStyle := true
 scalacOptions += "-deprecation"
