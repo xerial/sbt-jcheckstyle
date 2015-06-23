@@ -17,6 +17,14 @@ $ sbt jcheckStyle
 $ sbt test:jcheckStyle
 ```
 
+### Run style check before compilation
+
+Add the following sbt settings:
+```
+compile in Compile <<= (compile in Compile) dependsOn (jcheckStyle in Compile)
+compile in Test <<= (compile in Test) dependsOn (jcheckStyle in Test)
+```
+
 ## Style configuration
 
 To configure Java code style, edit `jcheckStyleConfig` setting. In default, it uses Google's Java style:
