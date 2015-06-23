@@ -30,6 +30,7 @@ Here is the list of the available styles:
 * `google`:  [Google's Java Style](https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html). [checkstyle.xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml)
   * [IntelliJ setting file](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml) 
 * `facebook` : [Code style used in Facebook Presto](https://github.com/facebook/presto/blob/master/src/checkstyle/checks.xml)
+  * [IntelliJ setting file](https://raw.githubusercontent.com/airlift/codestyle/master/IntelliJIdea13/Airlift.xml)
 * `sun`: [Code Conventions for the Java TM Programming Language](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html).
 [checkstyle.xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml)
 
