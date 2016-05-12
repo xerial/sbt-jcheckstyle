@@ -6,7 +6,7 @@ A sbt plugin for checking Java code styles with [checkstyle](http://checkstyle.s
 Add sbt-jcheckstyle plugin to your `project/plugins.sbt`, then run `jcheckStyle` task:
 **project/plugins.sbt**
 ```
-addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "0.1.2")
+addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "0.1.3")
 ```
 
 ```
@@ -36,7 +36,7 @@ jcheckStyleConfig := "google" // or "facebook", "sun" or path to your checkstyle
 Here is the list of the available styles:
 
 * `google`:  [Google's Java Style](https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html). [checkstyle.xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml)
-  * [IntelliJ setting file](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml) 
+  * [IntelliJ setting file](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml)
 * `facebook` : [Code style used in Facebook Presto](https://github.com/facebook/presto/blob/master/src/checkstyle/checks.xml)
   * [IntelliJ setting file](https://raw.githubusercontent.com/airlift/codestyle/master/IntelliJIdea13/Airlift.xml)
 * `sun`: [Code Conventions for the Java TM Programming Language](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html).
@@ -44,5 +44,5 @@ Here is the list of the available styles:
 
 Or you can specify your own configuration:
 ```
-jcheckStyelConfig := "checkstyle.xml"
+jcheckStyleConfig := "checkstyle.xml"
 ```
