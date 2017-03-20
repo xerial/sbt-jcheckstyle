@@ -26,5 +26,5 @@ scriptedLaunchOpts ++= {
 }
 
 libraryDependencies ++= Seq(
-  "com.puppycrawl.tools" % "checkstyle" % "6.18"
+  "com.puppycrawl.tools" % "checkstyle" % "7.6"
 )
