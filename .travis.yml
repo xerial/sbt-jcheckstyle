@@ -1,9 +1,10 @@
 language: scala
 
+sudo: required
+dist: trusty
+
 jdk:
-  - openjdk7
   - oraclejdk8
   - oraclejdk9
 
 script: sbt compile scripted
-
