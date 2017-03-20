@@ -25,6 +25,6 @@ scriptedLaunchOpts ++= {
   memOpt ++ Seq(s"-Dplugin.version=${version.value}")
 }
 
-libraryDependencies ++= Seq(
+libraryDependencies := Seq(
   "com.puppycrawl.tools" % "checkstyle" % "7.6"
 )
