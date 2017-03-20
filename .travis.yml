@@ -1,4 +1,9 @@
 language: scala
 
+jdk:
+  - openjdk7
+  - oraclejdk8
+  - oraclejdk9
+
 script: sbt compile scripted
 
