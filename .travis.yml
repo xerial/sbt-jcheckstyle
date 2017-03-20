@@ -7,4 +7,6 @@ jdk:
   - oraclejdk8
   - oraclejdk9
 
+sbt_args: -J-Xms2048M -J-Xmx2048M -J-Xss6M
+
 script: sbt compile scripted
