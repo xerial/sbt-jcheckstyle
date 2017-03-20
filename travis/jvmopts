@@ -1,4 +1,3 @@
 -Xms2048M
 -Xmx2048M
 -Xss6M
--Dscala.usejavacp=true
