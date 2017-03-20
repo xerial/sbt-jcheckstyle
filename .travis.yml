@@ -1,5 +1,8 @@
 language: scala
 
+scala:
+  - 2.10.6
+
 sudo: required
 dist: trusty
 
