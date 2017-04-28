@@ -1,4 +1,15 @@
 language: scala
 
-script: sbt compile scripted
+scala:
+  - 2.10.6
 
+sudo: required
+dist: trusty
+
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+
+
+script:
+  - sbt -jvm-opts travis/jvmopts compile scripted

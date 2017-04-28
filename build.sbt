@@ -5,7 +5,7 @@ organizationHomepage := Some(new URL("http://xerial.org/"))
 
 description := "A sbt plugin for checking Java code styles"
 
-scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-target:jvm-1.6")
+scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked")
 
 sbtPlugin := true
 publishMavenStyle := true
@@ -26,5 +26,5 @@ scriptedLaunchOpts ++= {
 }
 
 libraryDependencies ++= Seq(
-  "com.puppycrawl.tools" % "checkstyle" % "6.18"
+  "com.puppycrawl.tools" % "checkstyle" % "7.6"
 )
