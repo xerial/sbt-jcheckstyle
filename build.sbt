@@ -5,7 +5,7 @@ organizationHomepage := Some(new URL("http://xerial.org/"))
 
 description := "A sbt plugin for checking Java code styles"
 
-scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-target:jvm-1.6")
+scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked")
 
 sbtPlugin := true
 publishMavenStyle := true
@@ -20,7 +20,7 @@ scriptedLaunchOpts ++= {
     .getRuntimeMXBean()
     .getInputArguments()
     .asScala
-    .filter(a => Seq("-Xmx", "-Xms").contains(a) || a.startsWith("-XX"))
+    .filter(a => Seq("scala.ext.dirs", "-Xmx", "-Xms").exists(a.contains) || a.startsWith("-XX"))
     .toSeq
   memOpt ++ Seq(s"-Dplugin.version=${version.value}")
 }
