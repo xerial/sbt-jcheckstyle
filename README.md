@@ -6,7 +6,8 @@ A sbt plugin for checking Java code styles with [checkstyle](http://checkstyle.s
 Add sbt-jcheckstyle plugin to your `project/plugins.sbt`, then run `jcheckStyle` task:
 **project/plugins.sbt**
 ```
-addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "0.1.4")
+// For sbt-0.13.x and 1.0.x
+addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "0.2.0")
 ```
 
 ```
