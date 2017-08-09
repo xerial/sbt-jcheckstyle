@@ -8,10 +8,12 @@ description := "A sbt plugin for checking Java code styles"
 scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked")
 
 sbtPlugin := true
+scalaVersion := "2.12.3"
+sbtVersion := "1.0.0-RC3"
 publishMavenStyle := true
 scalacOptions += "-deprecation"
 
-scriptedSettings
+enablePlugins(ScriptedPlugin)
 scriptedBufferLog := false
 scriptedLaunchOpts ++= {
   import scala.collection.JavaConverters._
@@ -28,3 +30,4 @@ scriptedLaunchOpts ++= {
 libraryDependencies ++= Seq(
   "com.puppycrawl.tools" % "checkstyle" % "6.18"
 )
+

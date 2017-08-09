@@ -31,8 +31,8 @@ object JCheckStyle extends AutoPlugin {
   lazy val jcheckStyleSettings = Seq[Setting[_]](
     jcheckStyleConfig := "google",
     jcheckStyleStrict := true,
-    jcheckStyle in Compile <<= runCheckStyle(Compile),
-    jcheckStyle in Test <<= runCheckStyle(Test)
+    jcheckStyle in Compile := runCheckStyle(Compile).value,
+    jcheckStyle in Test := runCheckStyle(Test).value
   )
 
   private def relPath(file: File, base: File): File =
@@ -115,32 +115,37 @@ object JCheckStyle extends AutoPlugin {
 
   def runCheckStyle(conf: Configuration): Def.Initialize[Task[Boolean]] = Def.task {
     val log = streams.value.log
+    val baseDir = baseDirectory.value
+    val javaSrcDir = (javaSource in conf).value
+    val isStrict = jcheckStyleStrict.value
+    val config = jcheckStyleConfig.value
+    val sourceFiles = (sources in conf).value
+    val targetDir = target.value
 
     if (!isJavaAtLeast("1.7")) {
       log.warn(s"checkstyle requires Java 1.7 or higher.")
     }
     else {
-      val javaSrcDir = (javaSource in conf).value
-      log.info(s"Running checkstyle: ${relPath(javaSrcDir, baseDirectory.value)}")
+      log.info(s"Running checkstyle: ${relPath(javaSrcDir, baseDir)}")
 
       // Find checkstyle configuration
-      val styleFile = findStyleFile(jcheckStyleConfig.value, target.value)
+      val styleFile = findStyleFile(config, targetDir)
       if (!styleFile.exists()) {
         sys.error(s"${styleFile} does not exist. jcheckStyleConfig must be airlift, google, sun or path to config.xml")
       }
 
-      log.info(s"Using checkstyle configuration: ${jcheckStyleConfig.value}")
+      log.info(s"Using checkstyle configuration: ${config}")
 
-      val javaFiles = (sources in conf).value.filter(_.getName endsWith ".java").asJava
+      val javaFiles = sourceFiles.filter(_.getName endsWith ".java").asJava
       val loader = ConfigurationLoader.loadConfiguration(styleFile.getPath, new PropertiesExpander(System.getProperties))
       val checker = new Checker()
       try {
         checker.setModuleClassLoader(classOf[Checker].getClassLoader)
         checker.configure(loader)
-        checker.addListener(new StyleCheckListener(baseDirectory.value, log))
+        checker.addListener(new StyleCheckListener(baseDir, log))
         val totalNumberOfErrors = checker.process(javaFiles)
         if (totalNumberOfErrors > 0) {
-          if (jcheckStyleStrict.value) {
+          if (isStrict) {
             sys.error(s"Found ${totalNumberOfErrors} style error(s)")
           }
         }
