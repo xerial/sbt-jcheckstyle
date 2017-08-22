@@ -3,28 +3,16 @@ language: scala
 
 sudo: false
 
+script: ./sbt compile scripted
+
 matrix:
   include:
   # sbt-1.0 based on Scala 2.12 doesn't support JDK7
   - sudo: false
     jdk: oraclejdk8
-    script: ./sbt compile scripted
   - sudo: required
     group: edge
     jdk: oraclejdk9
-    script:
-    # https://github.com/sbt/sbt/pull/2951
-    - git clone https://github.com/retronym/java9-rt-export
-    - cd java9-rt-export/
-    - git checkout 1019a2873d057dd7214f4135e84283695728395d
-    - jdk_switcher use oraclejdk8
-    - echo 'sbt.version=1.0.0-RC3' > project/build.properties
-    - ../sbt package
-    - jdk_switcher use oraclejdk9
-    - mkdir -p $HOME/.sbt/1.0/java9-rt-ext | java -jar target/java9-rt-export-*.jar $HOME/.sbt/1.0/java9-rt-ext/rt.jar
-    - jar tf $HOME/.sbt/1.0/java9-rt-ext/rt.jar | grep java/lang/Object
-    - cd ..
-    - ./sbt -Dscala.ext.dirs=$HOME/.sbt/1.0/java9-rt-ext compile scripted
 
 addons:
   apt:
