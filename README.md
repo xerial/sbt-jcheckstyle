@@ -36,7 +36,7 @@ jcheckStyleConfig := "google" // or "facebook", "sun" or path to your checkstyle
 
 Here is the list of the available styles:
 
-* `google`:  [Google's Java Style](https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html). [checkstyle.xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml)
+* `google`:  [Google's Java Style](https://google.github.io/styleguide/javaguide.html). [checkstyle.xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml)
   * [IntelliJ setting file](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml)
 * `facebook` : [Code style used in Facebook Presto](https://github.com/facebook/presto/blob/master/src/checkstyle/checks.xml)
   * [IntelliJ setting file](https://raw.githubusercontent.com/airlift/codestyle/master/IntelliJIdea13/Airlift.xml)
