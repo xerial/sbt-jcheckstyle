@@ -1,6 +1,9 @@
 Release Notes
 ===
 
+# 0.2.1
+- Update Goodle Java style
+
 # 0.2.0
 - sbt-1.0 support
 - Dropped sbt-0.13.x support
