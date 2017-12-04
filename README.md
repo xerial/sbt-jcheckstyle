@@ -2,12 +2,13 @@
 A sbt plugin for checking Java code styles with [checkstyle](http://checkstyle.sourceforge.net/).
 
 ## Usage
+ [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.xerial.sbt/sbt-jcheckstyle/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.xerial.sbt/sbt-jcheckstyle)
 
 Add sbt-jcheckstyle plugin to your `project/plugins.sbt`, then run `jcheckStyle` task:
 **project/plugins.sbt**
 ```
 // For sbt-0.13.x and 1.0.x
-addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "0.2.0")
+addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "(version)")
 ```
 
 ```
