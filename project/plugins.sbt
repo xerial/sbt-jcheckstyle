@@ -1,5 +1,5 @@
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "2.0")
-addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.0")
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.6")
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 
-libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
+addSbtPlugin("com.github.sbt" % "sbt-pgp"      % "2.3.1")
+addSbtPlugin("com.github.sbt" % "sbt-dynver"   % "5.1.1")
+addSbtPlugin("org.scalameta"  % "sbt-scalafmt" % "2.5.6")

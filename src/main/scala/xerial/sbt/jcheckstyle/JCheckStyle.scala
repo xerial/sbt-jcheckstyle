@@ -6,76 +6,72 @@ import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object JCheckStyle extends AutoPlugin {
 
   trait JCheckStyleKeys {
-    val jcheckStyleConfig = settingKey[String]("Check style type: google (default), facebook, sun or path to checkstyle.xml")
+    val jcheckStyleConfig =
+      settingKey[String]("Check style type: google (default), facebook, sun or path to checkstyle.xml")
     val jcheckStyleStrict = settingKey[Boolean]("Issue an error when style check fails. default = true")
-    val jcheckStyle = taskKey[Boolean]("Run checkstyle")
+    val jcheckStyle       = taskKey[Boolean]("Run checkstyle")
   }
 
-  object JCheckStyleKeys extends JCheckStyleKeys {
-  }
+  object JCheckStyleKeys extends JCheckStyleKeys {}
 
-  object autoImport extends JCheckStyleKeys {
-  }
+  object autoImport extends JCheckStyleKeys {}
 
-  override def trigger = allRequirements
-  override def requires = JvmPlugin
+  override def trigger         = allRequirements
+  override def requires        = JvmPlugin
   override def projectSettings = jcheckStyleSettings
 
   import autoImport._
 
-  lazy val jcheckStyleSettings = Seq[Setting[_]](
-    jcheckStyleConfig := "google",
-    jcheckStyleStrict := true,
-    jcheckStyle in Compile := runCheckStyle(Compile).value,
-    jcheckStyle in Test := runCheckStyle(Test).value
+  lazy val jcheckStyleSettings = Seq[Setting[?]](
+    jcheckStyleConfig     := "google",
+    jcheckStyleStrict     := true,
+    Compile / jcheckStyle := runCheckStyle(Compile).value,
+    Test / jcheckStyle    := runCheckStyle(Test).value
   )
 
   private def relPath(file: File, base: File): File =
     file.relativeTo(base).getOrElse(file)
 
-
-  private def findStyleFile(style:String, targetDir:File): File = {
+  private def findStyleFile(style: String, targetDir: File): File = {
     val styleResource = this.getClass.getResource(s"/xerial/sbt/jcheckstyle/${style}.xml")
-    if(styleResource != null) {
+    if (styleResource != null) {
       val in = styleResource.openStream()
       try {
         val configFileBytes = IO.readBytes(in)
-        val path = targetDir / "jcheckstyle" / s"${style.toLowerCase}.xml"
+        val path            = targetDir / "jcheckstyle" / s"${style.toLowerCase}.xml"
         path.getParentFile.mkdirs()
         IO.write(path, configFileBytes)
         path
-      }
-      finally {
+      } finally {
         in.close()
       }
-    }
-    else {
+    } else {
       new File(style)
     }
   }
 
   /** Compares the given specification version to the specification version of the platform.
     *
-    * This code is copied from https://github.com/som-snytt/scala/blob/10336958aba9b8af5f9127a4dc21c0899836ff8d/src/library/scala/util/Properties.scala#L185
+    * This code is copied from
+    * https://github.com/som-snytt/scala/blob/10336958aba9b8af5f9127a4dc21c0899836ff8d/src/library/scala/util/Properties.scala#L185
     *
-    *  @param version a specification version number (legacy forms acceptable)
-    *  @return `true` if the specification version of the current runtime
-    *    is equal to or higher than the version denoted by the given string.
-    *  @throws NumberFormatException if the given string is not a version string
+    * @param version
+    *   a specification version number (legacy forms acceptable)
+    * @return
+    *   `true` if the specification version of the current runtime is equal to or higher than the version denoted by the
+    *   given string.
+    * @throws NumberFormatException
+    *   if the given string is not a version string
     *
-    *  @example {{{
-    *  // In this example, the runtime's Java specification is assumed to be at version 8.
-    *  isJavaAtLeast("1.8")            // true
-    *  isJavaAtLeast("8")              // true
-    *  isJavaAtLeast("9")              // false
-    *  isJavaAtLeast("9.1")            // false
-    *  isJavaAtLeast("1.9")            // throws
-    *  }}}
+    * @example
+    *   {{{ // In this example, the runtime's Java specification is assumed to be at version 8. isJavaAtLeast("1.8") //
+    *   true isJavaAtLeast("8") // true isJavaAtLeast("9") // false isJavaAtLeast("9.1") // false isJavaAtLeast("1.9")
+    *   // throws }}}
     */
   private def isJavaAtLeast(version: String): Boolean = {
     def versionOf(s: String, depth: Int): (Int, String) =
@@ -83,14 +79,14 @@ object JCheckStyle extends AutoPlugin {
         case 0 =>
           (-2, s.substring(1))
         case 1 if depth == 0 && s.charAt(0) == '1' =>
-          val r0 = s.substring(2)
+          val r0     = s.substring(2)
           val (v, r) = versionOf(r0, 1)
-          val n = if (v > 8 || r0.isEmpty) -2 else v   // accept 1.8, not 1.9 or 1.
+          val n      = if (v > 8 || r0.isEmpty) -2 else v // accept 1.8, not 1.9 or 1.
           (n, r)
         case -1 =>
           val n = if (!s.isEmpty) s.toInt else if (depth == 0) -2 else 0
           (n, "")
-        case i  =>
+        case i =>
           val r = s.substring(i + 1)
           val n = if (depth < 2 && r.isEmpty) -2 else s.substring(0, i).toInt
           (n, r)
@@ -114,18 +110,17 @@ object JCheckStyle extends AutoPlugin {
   }
 
   def runCheckStyle(conf: Configuration): Def.Initialize[Task[Boolean]] = Def.task {
-    val log = streams.value.log
-    val baseDir = baseDirectory.value
-    val javaSrcDir = (javaSource in conf).value
-    val isStrict = jcheckStyleStrict.value
-    val config = jcheckStyleConfig.value
-    val sourceFiles = (sources in conf).value
-    val targetDir = target.value
+    val log         = streams.value.log
+    val baseDir     = baseDirectory.value
+    val javaSrcDir  = (conf / javaSource).value
+    val isStrict    = jcheckStyleStrict.value
+    val config      = jcheckStyleConfig.value
+    val sourceFiles = (conf / sources).value
+    val targetDir   = target.value
 
     if (!isJavaAtLeast("1.7")) {
       log.warn(s"checkstyle requires Java 1.7 or higher.")
-    }
-    else {
+    } else {
       log.info(s"Running checkstyle: ${relPath(javaSrcDir, baseDir)}")
 
       // Find checkstyle configuration
@@ -136,8 +131,9 @@ object JCheckStyle extends AutoPlugin {
 
       log.info(s"Using checkstyle configuration: ${config}")
 
-      val javaFiles = sourceFiles.filter(_.getName endsWith ".java").asJava
-      val loader = ConfigurationLoader.loadConfiguration(styleFile.getPath, new PropertiesExpander(System.getProperties))
+      val javaFiles = sourceFiles.filter(_.getName.endsWith(".java")).asJava
+      val loader =
+        ConfigurationLoader.loadConfiguration(styleFile.getPath, new PropertiesExpander(System.getProperties))
       val checker = new Checker()
       try {
         checker.setModuleClassLoader(classOf[Checker].getClassLoader)
@@ -148,12 +144,10 @@ object JCheckStyle extends AutoPlugin {
           if (isStrict) {
             sys.error(s"Found ${totalNumberOfErrors} style error(s)")
           }
-        }
-        else {
+        } else {
           log.info(s"checkstyle has succeeded")
         }
-      }
-      finally {
+      } finally {
         checker.destroy()
       }
     }
@@ -181,13 +175,9 @@ object JCheckStyle extends AutoPlugin {
 
     override def fileFinished(evt: AuditEvent): Unit = {}
 
-    override def addException(evt: AuditEvent, throwable: Throwable): Unit = {
-    }
+    override def addException(evt: AuditEvent, throwable: Throwable): Unit = {}
 
-    override def auditFinished(evt: AuditEvent): Unit = {
-
-    }
+    override def auditFinished(evt: AuditEvent): Unit = {}
   }
-
 
 }
