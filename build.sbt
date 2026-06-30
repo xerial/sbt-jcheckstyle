@@ -1,33 +1,61 @@
-organization := "org.xerial.sbt"
-name := "sbt-jcheckstyle"
-organizationName := "Xerial project"
-organizationHomepage := Some(new URL("http://xerial.org/"))
+Global / onChangedBuildSource := ReloadOnSourceChanges
 
-description := "A sbt plugin for checking Java code styles"
+enablePlugins(SbtPlugin)
 
-scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked")
+val SCALA_3 = "3.8.4"
+ThisBuild / scalaVersion := SCALA_3
 
-sbtPlugin := true
-scalaVersion := "2.12.3"
-sbtVersion := "1.0.0-RC3"
-publishMavenStyle := true
-scalacOptions += "-deprecation"
+// Build the plugin for sbt 2.x (Scala 3). The meta-build itself runs on sbt 1.11.x.
+pluginCrossBuild / sbtVersion := "2.0.0"
 
-enablePlugins(ScriptedPlugin)
+// Derive the version from git tags (e.g. tag "0.3.0" -> version 0.3.0)
+ThisBuild / dynverVTagPrefix        := false
+ThisBuild / dynverSeparator         := "-"
+ThisBuild / dynverSonatypeSnapshots := true
+
+organization         := "org.xerial.sbt"
+organizationName     := "Xerial project"
+name                 := "sbt-jcheckstyle"
+organizationHomepage := Some(url("http://xerial.org/"))
+description          := "A sbt plugin for checking Java code styles with checkstyle"
+
+publishMavenStyle      := true
+Test / publishArtifact := false
+pomIncludeRepository   := { _ => false }
+
+scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-feature")
+
 scriptedBufferLog := false
 scriptedLaunchOpts ++= {
   import scala.collection.JavaConverters._
-  val memOpt: Seq[String] = management
-    .ManagementFactory
+  management.ManagementFactory
     .getRuntimeMXBean()
     .getInputArguments()
     .asScala
-    .filter(a => Seq("scala.ext.dirs", "-Xmx", "-Xms").exists(a.contains) || a.startsWith("-XX"))
-    .toSeq
-  memOpt ++ Seq(s"-Dplugin.version=${version.value}")
+    .filter(a => Seq("-Xmx", "-Xms").exists(a.startsWith) || a.startsWith("-XX"))
+    .toSeq ++ Seq("-Dplugin.version=" + version.value)
 }
 
 libraryDependencies ++= Seq(
   "com.puppycrawl.tools" % "checkstyle" % "8.5"
 )
 
+// Publishing metadata
+homepage := Some(url("https://github.com/xerial/sbt-jcheckstyle"))
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/xerial/sbt-jcheckstyle"),
+    "scm:git@github.com:xerial/sbt-jcheckstyle.git"
+  )
+)
+developers := List(
+  Developer(id = "leo", name = "Taro L. Saito", email = "leo@xerial.org", url = url("http://xerial.org/leo"))
+)
+licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+
+// Publish to Sonatype Central (built-in to sbt 1.11+/2.x via sonaUpload / sonaRelease)
+publishTo := {
+  val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+  if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+  else localStaging.value
+}
