@@ -1,14 +1,24 @@
 # sbt-jcheckstyle
-A sbt plugin for checking Java code styles with [checkstyle](http://checkstyle.sourceforge.net/).
+A sbt plugin for checking Java code styles with [checkstyle](https://checkstyle.org/).
+
+[![CI](https://github.com/xerial/sbt-jcheckstyle/actions/workflows/test.yml/badge.svg)](https://github.com/xerial/sbt-jcheckstyle/actions/workflows/test.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/org.xerial.sbt/sbt-jcheckstyle_sbt2_3?label=Maven%20Central)](https://central.sonatype.com/artifact/org.xerial.sbt/sbt-jcheckstyle_sbt2_3)
+
+## Compatibility
+
+| sbt-jcheckstyle | sbt      | Scala (build) |
+|-----------------|----------|---------------|
+| 0.3.x           | 2.x      | 3             |
+| 0.2.x           | 1.x      | 2.12          |
 
 ## Usage
- [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.xerial.sbt/sbt-jcheckstyle/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.xerial.sbt/sbt-jcheckstyle)
 
-Add sbt-jcheckstyle plugin to your `project/plugins.sbt`, then run `jcheckStyle` task:
+Add sbt-jcheckstyle plugin to your `project/plugins.sbt`, then run the `jcheckStyle` task:
+
 **project/plugins.sbt**
-```
-// For sbt 2.x (since 0.3.0). Use sbt-jcheckstyle 0.2.x for sbt 1.x.
-addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "(version)")
+```scala
+// sbt 2.x (use sbt-jcheckstyle 0.2.x for sbt 1.x)
+addSbtPlugin("org.xerial.sbt" % "sbt-jcheckstyle" % "0.3.0")
 ```
 
 ```
@@ -22,7 +32,7 @@ $ sbt Test/jcheckStyle
 ### Run style check before compilation
 
 Add the following sbt settings:
-```
+```scala
 Compile / compile := (Compile / compile).dependsOn(Compile / jcheckStyle).value
 Test / compile    := (Test / compile).dependsOn(Test / jcheckStyle).value
 ```
@@ -31,7 +41,7 @@ Test / compile    := (Test / compile).dependsOn(Test / jcheckStyle).value
 
 To configure Java code style, edit `jcheckStyleConfig` setting. In default, it uses Google's Java style:
 
-```
+```scala
 jcheckStyleConfig := "google" // or "facebook", "sun" or path to your checkstyle.xml
 ```
 
@@ -45,6 +55,6 @@ Here is the list of the available styles:
 [checkstyle.xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml)
 
 Or you can specify your own configuration:
-```
+```scala
 jcheckStyleConfig := "checkstyle.xml"
 ```
