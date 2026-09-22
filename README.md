@@ -34,7 +34,7 @@ $ sbt Test/jcheckStyle
 Add the following sbt settings:
 ```scala
 Compile / compile := (Compile / compile).dependsOn(Compile / jcheckStyle).value
-Test / compile    := (Test / compile).dependsOn(Test / jcheckStyle).value
+Test / compile := (Test / compile).dependsOn(Test / jcheckStyle).value
 ```
 
 ## Style configuration
