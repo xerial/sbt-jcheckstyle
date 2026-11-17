@@ -2,11 +2,12 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 enablePlugins(SbtPlugin)
 
-val SCALA_3 = "3.8.4"
-ThisBuild / scalaVersion := SCALA_3
+val SCALA_3 = "3.9.0"
+ThisBuild / scalaVersion       := SCALA_3
+ThisBuild / crossScalaVersions := Seq(SCALA_3)
 
 // Build the plugin for sbt 2.x (Scala 3). The meta-build itself runs on sbt 1.11.x.
-pluginCrossBuild / sbtVersion := "2.0.0"
+pluginCrossBuild / sbtVersion := "2.1.0"
 
 // Derive the version from git tags (e.g. tag "0.3.0" -> version 0.3.0)
 ThisBuild / dynverVTagPrefix        := false
